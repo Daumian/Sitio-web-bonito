@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Muchos Pájaros 🐦✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --sky:#AEE7FF;
+      --sun:#FFD166;
+      --cloud:#ffffffcc;
+      --accent:#2EB04D;
+      --glass: rgba(255,255,255,0.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial,sans-serif;background:linear-gradient(180deg,var(--sky) 0%, #E6F7FF 60%, #F6FBFF 100%)}
+    .container{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px}
+
+    header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{font-size:1.6rem;margin:0;color:#023047}
+    p.lead{margin:0;color:#03506f;opacity:0.9}
+
+    .scene{position:relative;width:100%;max-width:1100px;height:640px;border-radius:20px;background:linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0.06));box-shadow:0 10px 30px rgba(2,48,71,0.08);overflow:hidden;padding:24px}
+
+    /* sun */
+    .sun{position:absolute;right:48px;top:48px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff2c6 0%, var(--sun) 40%, #ffb84d 100%);filter:blur(2px);opacity:0.95}
+
+    /* clouds */
+    .cloud{position:absolute;background:var(--cloud);border-radius:50px;opacity:0.95;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.06))}
+    .cloud.c1{left:20px;top:40px;width:220px;height:60px}
+    .cloud.c2{left:80px;top:110px;width:140px;height:46px}
+    .cloud.c3{right:120px;top:120px;width:180px;height:55px}
+
+    /* ground */
+    .horizon{position:absolute;left:0;right:0;bottom:0;height:140px;background:linear-gradient(0deg,#dff4df, #f3fff0);border-top-left-radius:40px;border-top-right-radius:40px;display:flex;align-items:flex-end;padding:20px}
+    .grass{height:84px;width:100%;max-width:900px;margin:0 auto;border-radius:12px;background:linear-gradient(180deg,#9ee89f,#3bb44a);box-shadow:inset 0 6px 20px rgba(0,0,0,0.06)}
+
+    /* bird container */
+    .flock{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none}
+
+    /* bird base styles */
+    .bird{position:absolute;width:80px;height:48px;transform-origin:center;will-change:transform,opacity}
+    .bird svg{width:100%;height:100%;display:block}
+
+    /* flying animations */
+    @keyframes flyAcross{
+      0%{transform:translateX(-20%) translateY(0) scale(0.8);opacity:0}
+      10%{opacity:1}
+      50%{transform:translateX(50vw) translateY(-10vh) scale(1)}
+      100%{transform:translateX(120vw) translateY(10vh) scale(0.9);opacity:0}
+    }
+    @keyframes flap{0%{transform:rotate(0)}50%{transform:rotate(6deg)}100%{transform:rotate(0)}}
+
+    .bird .wing{animation:flap 0.9s ease-in-out infinite}
+
+    /* small UI */
+    .controls{position:relative;z-index:20;display:flex;gap:10px;align-items:center}
+    button, .info{background:var(--glass);border:1px solid rgba(255,255,255,0.18);backdrop-filter:blur(6px);padding:8px 12px;border-radius:10px;color:#012;cursor:pointer}
+    button:hover{transform:translateY(-3px)}
+    .counter{font-weight:700}
+
+    footer{margin-top:18px;color:#024;opacity:0.85}
+
+    /* responsive tweaks */
+    @media (max-width:640px){.scene{height:520px;padding:16px}.sun{width:88px;height:88px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Jardín de Pájaros 🐦🌿</h1>
+        <p class="lead">Un HTML chiquito para ver muchos pajaritos y jugar con ellos.</p>
+      </div>
+      <div class="controls">
+        <button id="add">Añadir pájaros ➕</button>
+        <button id="boom">Lluvia de pájaros ☔️</button>
+        <div class="info">Pájaros: <span id="count" class="counter">0</span></div>
+      </div>
+    </header>
+
+    <main class="scene" role="main" aria-label="Escena con muchos pájaros">
+      <div class="sun" aria-hidden="true"></div>
+      <div class="cloud c1" aria-hidden="true"></div>
+      <div class="cloud c2" aria-hidden="true"></div>
+      <div class="cloud c3" aria-hidden="true"></div>
+
+      <div class="flock" id="flock"></div>
+
+      <div class="horizon" aria-hidden="true">
+        <div class="grass"></div>
+      </div>
+
+      <!-- SVG template for birds -->
+      <template id="birdTpl">
+        <div class="bird" role="img" aria-label="Pájaro">
+          <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#fff" stop-opacity="0.9"/>
+                <stop offset="1" stop-color="#fff" stop-opacity="0.3"/>
+              </linearGradient>
+            </defs>
+            <g transform="translate(0,6)">
+              <ellipse cx="36" cy="30" rx="22" ry="12" fill="#fff" opacity="0.9"/>
+              <path d="M10 34 C22 10, 72 10, 90 36" fill="#fff" stroke="#023047" stroke-width="0.8"/>
+              <g class="wing">
+                <path d="M28 22 C16 6, 48 0, 54 22 C44 18, 36 22, 28 22 Z" fill="#FFB4A2" stroke="#023047" stroke-width="0.6"/>
+              </g>
+              <circle cx="76" cy="26" r="3" fill="#023047"/>
+              <path d="M80 28 C84 30,86 40,74 38" stroke="#023047" stroke-width="1.2" fill="none"/>
+            </g>
+          </svg>
+        </div>
+      </template>
+
+      <!-- subtle decorative plants -->
+      <svg style="position:absolute;left:18px;bottom:18px;width:120px;height:120px;opacity:0.9" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M10 90 C30 70,40 60,50 50 C60 40,70 28,86 12" stroke="#2EB04D" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>
+
+    </main>
+
+    <footer>Divertite probando los botones y moviendo los pajaritos 😄</footer>
+  </div>
+
+  <script>
+    const flock = document.getElementById('flock');
+    const tpl = document.getElementById('birdTpl');
+    const countEl = document.getElementById('count');
+    let total = 0;
+
+    function rand(min, max){return Math.random()*(max-min)+min}
+
+    function createBird(opts={}){
+      const node = tpl.content.firstElementChild.cloneNode(true);
+      const size = opts.size || rand(36,110);
+      node.style.width = size+'px';
+      node.style.height = (size*0.6)+'px';
+      // start position
+      const y = opts.y ?? rand(10,70);
+      node.style.top = y+'%';
+      node.style.left = '-10%';
+
+      // random animation duration & delay
+      const duration = rand(8,18);
+      const delay = rand(0,4);
+      node.style.animation = `flyAcross ${duration}s linear ${delay}s forwards`;
+
+      // slight rotation random
+      node.style.transform = `translateX(0) translateY(0) rotate(${rand(-6,6)}deg)`;
+
+      // faster wing for small birds
+      const wing = node.querySelector('.wing');
+      if(wing){
+        wing.style.animationDuration = (rand(0.6,1.2))+'s';
+      }
+
+      // add to scene
+      flock.appendChild(node);
+      total += 1; updateCount();
+
+      // remove after animation ends
+      const removeAfter = (duration + delay + 1) * 1000;
+      setTimeout(()=>{
+        node.remove(); total = Math.max(0, total-1); updateCount();
+      }, removeAfter);
+
+      return node;
+    }
+
+    function updateCount(){countEl.textContent = total}
+
+    document.getElementById('add').addEventListener('click', ()=>{
+      // add 3 birds with stagger
+      for(let i=0;i<3;i++) setTimeout(()=>createBird({size:rand(48,100), y:rand(6,70)}), i*220);
+    });
+
+    document.getElementById('boom').addEventListener('click', ()=>{
+      // create a quick rain of birds
+      for(let i=0;i<30;i++) setTimeout(()=>createBird({size:rand(24,96), y:rand(2,85)}), i*60);
+    });
+
+    // initial birds
+    for(let i=0;i<8;i++){ setTimeout(()=>createBird({size:rand(40,110), y:rand(4,72)}), i*200) }
+
+    // fun: click the scene to add a bird where you clicked (desktop only)
+    document.querySelector('.scene').addEventListener('click', (e)=>{
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pctY = ((e.clientY - rect.top)/rect.height)*100;
+      createBird({size:rand(40,100), y:pctY});
+    });
+
+  </script>
+</body>
+</html>
