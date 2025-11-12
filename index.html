@@ -3,98 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Leer JSON — Demo</title>
+  <title>Leer JSON — Solo Subir Archivo</title>
   <style>
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:20px;background:#f7fafc;color:#111}
-    .card{background:#fff;padding:16px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,0.06);max-width:1000px;margin:auto}
+    .card{background:#fff;padding:16px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,0.06);max-width:800px;margin:auto}
     pre{white-space:pre-wrap;word-break:break-word;background:#0f172a;color:#e6eef8;padding:12px;border-radius:6px;overflow:auto}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:8px;border:1px solid #e6eef8;text-align:left}
     input[type=file]{display:block;margin-top:8px}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    button{padding:8px 12px;border-radius:6px;border:0;background:#00aEEF;color:white;cursor:pointer}
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Leer JSON en el navegador 🚀</h1>
-    <p>Encontrás 3 formas de cargar datos JSON y verlos: JSON embebido, subir archivo, o pegar texto.</p>
-
-    <div class="controls">
-      <button id="btn-embedded">Leer JSON embebido 📥</button>
-      <label>
-        Subir archivo JSON 🔼
-        <input id="file-input" type="file" accept="application/json" />
-      </label>
-      <button id="btn-clear">Limpiar ✖️</button>
-    </div>
-
-    <h3>JSON embebido (editable)</h3>
-    <textarea id="text-json" rows="6" style="width:100%;font-family:monospace">{
-  "etn_ticket_name": "Cena de Acción de Gracias",
-  "etn_ticket_price": 50,
-  "etn_ticket_slug": "1059-1-puesto-3ce1f",
-  "etn_ticket_qty": 2
-}</textarea>
-    <div style="margin-top:8px">
-      <button id="btn-parse">Parsear y mostrar ✅</button>
-    </div>
-
-    <h3 style="margin-top:16px">Salida</h3>
+    <h1>Subir y mostrar JSON 🚀</h1>
+    <p>Subí un archivo JSON y verás su contenido abajo:</p>
+    <input id="file-input" type="file" accept="application/json" />
+    <h3 style="margin-top:16px">Contenido del JSON</h3>
     <div id="output"></div>
   </div>
 
-  <!-- Ejemplo de JSON embebido dentro de un script type application/json -->
-  <script id="embedded-json" type="application/json">
-  [
-    {"nombre":"Ana","edad":28,"email":"ana@ejemplo.com"},
-    {"nombre":"Beto","edad":34,"email":"beto@ejemplo.com"},
-    {"nombre":"Carla","edad":22,"email":"carla@ejemplo.com"}
-  ]
-  </script>
-
   <script>
-    // Helpers
     const output = document.getElementById('output');
-    function pretty(obj){ return JSON.stringify(obj, null, 2); }
-
-    function renderAsTable(arr){
-      if(!Array.isArray(arr) || arr.length === 0){
-        output.innerHTML = '<pre>' + pretty(arr) + '</pre>';
-        return;
-      }
-      const keys = Array.from(new Set(arr.flatMap(o => Object.keys(o))));
-      const th = keys.map(k => `<th>${k}</th>`).join('');
-      const rows = arr.map(r => '<tr>' + keys.map(k => `<td>${escapeHtml(String(r[k] ?? ''))}</td>`).join('') + '</tr>').join('');
-      output.innerHTML = `<table><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table>`;
-    }
-
-    function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
     function parseAndShow(text){
       try{
         const data = JSON.parse(text);
-        if(Array.isArray(data)) renderAsTable(data);
-        else if(typeof data === 'object') output.innerHTML = '<pre>' + pretty(data) + '</pre>';
-        else output.innerHTML = '<pre>' + pretty(data) + '</pre>';
+        output.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
       }catch(e){
         output.innerHTML = '<pre style="color:#ffb4b4">Error al parsear JSON:\n' + e.message + '</pre>';
       }
     }
 
-    // Botones
-    document.getElementById('btn-embedded').addEventListener('click', ()=>{
-      const text = document.getElementById('embedded-json').textContent.trim();
-      parseAndShow(text);
-    });
-
-    document.getElementById('btn-parse').addEventListener('click', ()=>{
-      parseAndShow(document.getElementById('text-json').value);
-    });
-
-    document.getElementById('btn-clear').addEventListener('click', ()=>{ output.innerHTML = ''; });
-
-    // File upload
     document.getElementById('file-input').addEventListener('change', async (e)=>{
       const f = e.target.files[0];
       if(!f) return;
@@ -105,9 +42,6 @@
         output.innerHTML = '<pre style="color:#ffb4b4">No se pudo leer el archivo</pre>';
       }
     });
-
-    // Auto-parse on load (demo)
-    // parseAndShow(document.getElementById('embedded-json').textContent);
   </script>
 </body>
 </html>
