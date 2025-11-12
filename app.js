@@ -41,12 +41,12 @@ function handleFile(event) {
  * @returns {Object} Un objeto con los datos para cada hoja.
  */
 function transformJson(jsonArray) {
-    const parentData = [];     // Hoja 1: Datos Padre (Orden)
+    const parentData = [];     // Hoja 1: Datos Main (Orden)
     const ticketItemsData = []; // Hoja 2: Ítems del Ticket
     const attendeesData = [];   // Hoja 3: Asistentes
 
     jsonArray.forEach(order => {
-        // --- Hoja 1: Datos Padre (Orden) ---
+        // --- Hoja 1: Datos Main (Orden) ---
         // Crear una copia plana de la orden, eliminando los arrays anidados.
         const parent = { ...order };
         delete parent.ticket_items;
