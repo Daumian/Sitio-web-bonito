@@ -6,38 +6,85 @@
     <title>JSON a XLSX Multi-Hoja</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.17.4/dist/xlsx.full.min.js"></script>
     <style>
+        :root {
+            --primary: #007bff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
-            text-align: center;
+            background-color: var(--light);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
         }
         .container {
+            width: 100%;
+            max-width: 700px;
             background: white;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-        }
-        input[type="file"] {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            display: block;
-            margin: 0 auto 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         h1 {
-            color: #333;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        p {
+            color: var(--secondary);
+            margin-bottom: 25px;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 0 auto 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            cursor: pointer;
+        }
+        #statusMessage {
+            margin: 15px 0;
+            font-weight: bold;
+            min-height: 20px; /* Para mantener el espacio */
+        }
+        #jsonDisplay {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: left;
+        }
+        #jsonOutput {
+            background-color: #f6f6f6;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow: auto;
+            white-space: pre-wrap;
+            font-size: 0.85em;
+            color: var(--dark);
+            border: 1px solid #e0e0e0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Cargar JSON y Exportar a XLSX</h1>
-        <p>Selecciona el archivo JSON con los datos de las órdenes.</p>
+        <h1>JSON a XLSX Multi-Hoja 📊</h1>
+        <p>Sube tu archivo JSON con el formato de array de órdenes para generar un XLSX con tres hojas de cálculo.</p>
+        
         <input type="file" id="jsonFile" accept=".json">
-        <p id="statusMessage" style="color: green;"></p>
+        
+        <p id="statusMessage" style="color: var(--success);"></p>
+        
+        <div id="jsonDisplay">
+            <h2>Contenido JSON (Vista previa):</h2>
+            <pre id="jsonOutput">Esperando un archivo...</pre>
+        </div>
     </div>
 
     <script src="app.js"></script>
